@@ -21,7 +21,7 @@ use BAGArt\TelegramBotStt\Settings\SttSettings;
  */
 class TranscribeProcessor implements TgModuleProcessorContract
 {
-    private function __construct(
+    public function __construct(
         private readonly VoiceTranscriptionService $transcription,
     ) {}
 

@@ -1,0 +1,15 @@
+feat: finish R1-R4 — metrics, orchestration+E2E tests, bench
+
+- SttStats counters wired into /health/metrics via guarded hook in
+  HealthController::metrics() (stt_total, quota_blocked, latency buckets,
+  live breaker gauge); recording points in the step machine
+- DI: container-managed SttProviderContract + Http\Factory bindings so
+  E2E can swap provider and fake file downloads
+- Orchestrator: quota consumption on success; cached replay now renders
+  through TemplateRenderer like fresh replies
+- MenuProcessor: chat scope from embedded route chatId sign (CallbackQuery
+  DTO carries no usable originating-message payload on this platform)
+- Tests: +8 orchestration units (caps/silent/quota/breaker/budget), 9 E2E
+  feature tests incl. metrics exposition and selector routing, prune sweep
+  feature test
+- scripts/bench-latency.php: real-network p50/p95 profile harness

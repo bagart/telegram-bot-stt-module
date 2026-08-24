@@ -14,16 +14,18 @@ use BAGArt\TelegramBotStt\Guard\QuotaCounter;
 use BAGArt\TelegramBotStt\Media\FfmpegConverter;
 use BAGArt\TelegramBotStt\Media\FileDownloader;
 use BAGArt\TelegramBotStt\Processing\VoiceTranscriptionService;
-use BAGArt\TelegramBotStt\Provider\Adapter\OpenAiCompatibleStt;
 use BAGArt\TelegramBotStt\Provider\ConfigResolver;
 use BAGArt\TelegramBotStt\Provider\ProviderRegistry;
+use BAGArt\TelegramBotStt\Provider\SttProviderContract;
 use BAGArt\TelegramBotStt\Settings\SttSettingsService;
+use BAGArt\TelegramBotStt\Support\SttStats;
 use BAGArt\TelegramBotStt\Support\TemplateRenderer;
 use BAGArt\TelegramBotStt\Support\TranscriptionRecorder;
 use BAGArt\TelegramBotStt\Support\VaultTokenResolver;
 use BAGArt\TelegramBotStt\Ui\MenuRenderer;
 use BAGArt\TelegramBotStt\Ui\PendingInputService;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
+use Illuminate\Http\Client\Factory;
 
 /**
  * Service-graph builder for the module (Summarizer ModuleFactory mechanics).
@@ -86,12 +88,16 @@ final class ModuleFactory
         /** @var CacheRepository $cache */
         $cache = app('cache')->store();
 
+        /** @var Factory $http */
+        $http = app(Factory::class);
+
         return new VoiceTranscriptionService(
             settingsService: self::settings(),
             configResolver: self::configResolver(),
-            provider: new OpenAiCompatibleStt,
+            provider: app(SttProviderContract::class),
             downloader: new FileDownloader(
                 api: app(TgBotApiDTOClientContract::class),
+                http: $http,
                 tmpDirOverride: self::tmpDir(),
             ),
             converter: self::converter(),
@@ -103,6 +109,7 @@ final class ModuleFactory
             breaker: new ProviderBreaker($cache),
             sender: $sender,
             tokens: new VaultTokenResolver,
+            stats: new SttStats($cache),
             budgetSeconds: (int) config('stt.budget_seconds', 30),
         );
     }

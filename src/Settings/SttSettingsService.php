@@ -7,6 +7,7 @@ namespace BAGArt\TelegramBotStt\Settings;
 use BAGArt\TelegramBot\Contracts\Modules\ModuleEnablementContract;
 use BAGArt\TelegramBot\Contracts\Modules\ModuleSettingsContract;
 use BAGArt\TelegramBotManagement\Models\TgModuleEnablement;
+use BAGArt\TelegramBotStt\SttModuleId;
 use Illuminate\Support\Facades\DB;
 
 /**

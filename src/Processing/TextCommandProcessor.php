@@ -29,7 +29,7 @@ class TextCommandProcessor implements TgModuleProcessorContract
 
     public const CANCEL_NAME = 'text_cancel';
 
-    private function __construct(
+    public function __construct(
         private readonly VoiceTranscriptionService $transcription,
         private readonly TgSenderContract $sender,
     ) {}

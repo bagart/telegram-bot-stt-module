@@ -104,9 +104,42 @@ transitions, quota enforcement/fail-open, adapter contract (multipart fields,
 Bearer, error taxonomy, size caps, token-leak guard), menu keyboard layout,
 access rules incl. the private-chat peer rule.
 
+Plus orchestration units (`VoiceTranscriptionOrchestrationTest`): §7bis step
+machine against contract fakes — caps, silent/emoji/message surfacing modes,
+quota refusal + stats, open-breaker abort, AUTH failure tripping the breaker,
+zero-budget watchdog.
+
+Host-side Feature/E2E (`tests/Feature/Modules/SttModuleE2ETest.php`,
+`SttPruneCommandTest.php`): full settings/enablement/dedupe stack with a
+sender spy — auto-mode threading + one-time privacy notice, redelivery → one
+provider call + `(cached)` replay, panel render/denial, quota across voices,
+callback verb through the real selector, `stt_*` series through
+`/health/metrics`, prune sweep.
+
+## Bench
+
+Real-network latency profile (never in CI):
+
+```bash
+php scripts/bench-latency.php \
+  --url=https://api.groq.com/openai/v1 \
+  --token=gsk_... \
+  --model=whisper-large-v3 \
+  --file=voice.ogg \
+  --iterations=5
+```
+
+Reports per-iteration status and min/p50/p95/max against the module SLO
+(p95 ≤ 25 s).
+
 ## Metrics
 
-The module records its own counters (per-provider status/latency/breaker state
-via the guard stores) and reports them through `stt:doctor`. Wiring series into
-`/health/metrics` is a deliberate host-side follow-up (§12 "additive refactor")
-and intentionally not coupled here.
+`SttStats` counters are appended into the host `/health/metrics` endpoint
+(additive `class_exists`-guarded block in `HealthController::metrics()`):
+
+```
+stt_total{bot_id,provider,status}          # ok | empty | <error_code>
+stt_quota_blocked_total{bot_id}
+stt_latency_bucket{provider,le}            # coarse 250ms..25s buckets (gauge)
+stt_breaker{provider}                      # 0 closed | 1 open | 2 half-open
+```

@@ -32,7 +32,7 @@ use Throwable;
  */
 class MenuProcessor implements TgModuleProcessorContract
 {
-    private function __construct(
+    public function __construct(
         private readonly TgSenderContract $sender,
     ) {}
 
@@ -71,20 +71,24 @@ class MenuProcessor implements TgModuleProcessorContract
     ): void {
         assert($dto instanceof CallbackQueryTypeDTO);
 
-        if (! ModuleFactory::inLaravel() || $dto->message?->chat === null || $dto->from === null) {
+        if (! ModuleFactory::inLaravel() || $dto->from === null) {
             return;
         }
 
         $route = Route::decode($dto->data);
-        $actualChatId = (int) $dto->message->chat->id;
 
-        // Spoofing guard (§10.2): embedded chatId must match the callback chat.
-        if ($route === null || $route['chatId'] !== $actualChatId) {
+        if ($route === null) {
             return;
         }
 
+        // The parsed CallbackQuery DTO carries no usable originating-message
+        // payload (MaybeInaccessibleMessage is an unimplemented oneOf stub),
+        // so the embedded route chatId is the chat scope — re-authorized via
+        // canManage() on every press (§10.2 mitigation).
+        $chatId = $route['chatId'];
+
         try {
-            $this->dispatchVerb($dto, $botConfig, $actualChatId, $route['verb'], $route['arg']);
+            $this->dispatchVerb($dto, $botConfig, $chatId, $route['verb'], $route['arg']);
         } catch (Throwable $e) {
             report($e);
             $this->answer($botConfig, $dto, 'Menu error', alert: true);
@@ -98,7 +102,7 @@ class MenuProcessor implements TgModuleProcessorContract
         string $verb,
         ?string $arg,
     ): void {
-        $isPrivate = $query->message->chat->type?->value === 'private';
+        $isPrivate = self::isPrivateChatId($chatId);
 
         if (! ModuleFactory::access()->canManage($botConfig, $chatId, $query->from, $isPrivate)) {
             $this->answer($botConfig, $query, Strings::t('ru', 'panel.denied_group'), alert: true);
@@ -176,9 +180,8 @@ class MenuProcessor implements TgModuleProcessorContract
 
     private function renderMain(TgBotConfig $botConfig, CallbackQueryTypeDTO $query, int $chatId): void
     {
-        $isPrivate = $query->message->chat->type?->value === 'private';
         $settings = $this->settingsOf($botConfig, $query, $chatId);
-        $this->sendPage($botConfig, $chatId, ModuleFactory::menuRenderer()->main($chatId, $settings, $isPrivate));
+        $this->sendPage($botConfig, $chatId, ModuleFactory::menuRenderer()->main($chatId, $settings, self::isPrivateChatId($chatId)));
         $this->answer($botConfig, $query);
     }
 
@@ -307,9 +310,13 @@ class MenuProcessor implements TgModuleProcessorContract
 
     private function settingsOf(TgBotConfig $botConfig, CallbackQueryTypeDTO $query, int $chatId): SttSettings
     {
-        $isPrivate = $query->message->chat->type?->value === 'private';
+        return ModuleFactory::settings()->get((string) $botConfig->botId, $chatId, self::isPrivateChatId($chatId));
+    }
 
-        return ModuleFactory::settings()->get((string) $botConfig->botId, $chatId, $isPrivate);
+    /** Private Telegram chats have positive ids; groups/supergroups are negative. */
+    public static function isPrivateChatId(int $chatId): bool
+    {
+        return $chatId > 0;
     }
 
     /**

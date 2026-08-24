@@ -29,7 +29,7 @@ use Throwable;
  */
 class PendingInputProcessor implements TgModuleProcessorContract
 {
-    private function __construct(
+    public function __construct(
         private readonly ProviderRegistry $providers,
         private readonly TgSenderContract $sender,
     ) {}

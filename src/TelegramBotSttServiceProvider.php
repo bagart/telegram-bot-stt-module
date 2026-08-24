@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BAGArt\TelegramBotStt;
 
+use Illuminate\Http\Client\Factory;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,6 +28,13 @@ final class TelegramBotSttServiceProvider extends ServiceProvider
 
         // Singleton wiring: container-managed contracts only (DI rule, §5).
         $this->app->singleton(SttSettingsService::class);
+
+        // Provider + HTTP factory are container-managed so tests can swap them.
+        if (! $this->app->bound(Factory::class)) {
+            $this->app->singleton(Factory::class);
+        }
+
+        $this->app->singleton(Provider\SttProviderContract::class, Provider\Adapter\OpenAiCompatibleStt::class);
     }
 
     public function boot(): void

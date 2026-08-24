@@ -29,6 +29,7 @@ use BAGArt\TelegramBotStt\Provider\ProviderException;
 use BAGArt\TelegramBotStt\Provider\SttProviderContract;
 use BAGArt\TelegramBotStt\Settings\SttSettings;
 use BAGArt\TelegramBotStt\Settings\SttSettingsService;
+use BAGArt\TelegramBotStt\Support\SttStats;
 use BAGArt\TelegramBotStt\Support\TemplateRenderer;
 use BAGArt\TelegramBotStt\Support\TranscriptionRecorder;
 use BAGArt\TelegramBotStt\Support\VaultTokenResolver;
@@ -55,6 +56,7 @@ class VoiceTranscriptionService
         private readonly ProviderBreaker $breaker,
         private readonly TgSenderContract $sender,
         private readonly VaultTokenResolver $tokens,
+        private readonly SttStats $stats,
         private readonly int $budgetSeconds = 30,
     ) {}
 
@@ -88,8 +90,15 @@ class VoiceTranscriptionService
                 $settings->providerKey,
             );
 
-            if (! $isNew && $this->replayableText($row) !== null) {
-                $this->reply($botConfig, $message, $settings, $this->replayableText($row), null, cached: true);
+            if (! $isNew && ($cachedText = $this->replayableText($row)) !== null) {
+                $this->reply(
+                    $botConfig,
+                    $message,
+                    $settings,
+                    $this->renderer->render($settings, $cachedText, null, $voice->duration),
+                    null,
+                    cached: true,
+                );
 
                 return;
             }
@@ -99,6 +108,7 @@ class VoiceTranscriptionService
         }
 
         if (! $this->quota->allowed($botId, $chatId, $settings->dailyQuota)) {
+            $this->stats->incQuotaBlocked($botId);
             $this->surface($botConfig, $message, $settings, ErrorCode::QuotaProvider, $source);
 
             return;
@@ -178,6 +188,9 @@ class VoiceTranscriptionService
             ));
 
             $this->breaker->recordSuccess($providerKey);
+            $this->stats->incTotal($botId, $result->providerKey, 'ok');
+            $this->stats->recordLatency($providerKey, $result->latencyMs);
+            $this->quota->increment($botId, (int) $message->chat->id);
 
             if ($row !== null && $row->exists) {
                 $this->safeStore(fn (): mixed => $this->recorder->storeOk($row, $result->text, $result->providerKey, $result->latencyMs, $result->language));
@@ -240,6 +253,12 @@ class VoiceTranscriptionService
         ?SttTranscription $row,
         ErrorCode $code,
     ): void {
+        $this->stats->incTotal(
+            (string) $botConfig->botId,
+            $settings->providerKey,
+            $code === ErrorCode::EmptyResult ? 'empty' : $code->value,
+        );
+
         if ($row !== null && $row->exists) {
             $code === ErrorCode::EmptyResult
                 ? $this->safeStore(fn (): mixed => $this->recorder->storeEmpty($row, $settings->providerKey))
