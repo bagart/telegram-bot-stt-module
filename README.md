@@ -130,7 +130,7 @@ composer test                          # from this directory (host vendor)
 php artisan test --testsuite=SttModule
 ```
 
-65 tests / 250 assertions: callback grammar edges, settings clamps, renderer
+75 tests / 280 assertions: callback grammar edges, settings clamps, renderer
 escaping/truncation, provider catalog + SSRF rejection matrix, breaker
 transitions, quota enforcement/fail-open, adapter contract (multipart fields,
 Bearer, error taxonomy, size caps, token-leak guard), menu keyboard layout,
@@ -146,12 +146,13 @@ machine against contract fakes — caps, silent/emoji/message surfacing modes,
 quota refusal + stats, open-breaker abort, AUTH failure tripping the breaker,
 zero-budget watchdog.
 
-Host-side Feature/E2E (`tests/Feature/Modules/SttModuleE2ETest.php`,
+Feature/E2E (`tests/Feature/Stt/SttModuleE2ETest.php`,
 `SttPruneCommandTest.php`): full settings/enablement/dedupe stack with a
 sender spy — auto-mode threading + one-time privacy notice, redelivery → one
 provider call + `(cached)` replay, panel render/denial, quota across voices,
 callback verb through the real selector, `stt_*` series through
-`/health/metrics`, prune sweep.
+`/health/metrics`, prune sweep. Verified against the real Groq API and the
+local speaches Whisper box (see docs/tasks/todo.stt.md QA results).
 
 ## Bench
 

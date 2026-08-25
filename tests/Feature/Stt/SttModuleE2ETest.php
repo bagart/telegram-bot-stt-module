@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\User;
 use BAGArt\ASKClient\Contracts\Pipeline\ASKFutureContract;
 use BAGArt\TelegramBot\Configs\TgBotConfig;
 use BAGArt\TelegramBot\Configs\TgServiceConfig;
@@ -10,6 +11,8 @@ use BAGArt\TelegramBot\Contracts\Modules\ModuleEnablementContract;
 use BAGArt\TelegramBot\Contracts\Outbound\TgSenderContract;
 use BAGArt\TelegramBot\Contracts\TgApi\TgApiMethodDTOContract;
 use BAGArt\TelegramBot\Http\Pure\TgApiResponse;
+use BAGArt\TelegramBot\Modules\TgCommandRegistry;
+use BAGArt\TelegramBot\Modules\TgModuleRegistry;
 use BAGArt\TelegramBot\Processing\RegisteredUpdateProcessorSelector;
 use BAGArt\TelegramBot\TgApi\Methods\DTO\GetFileMethodDTO;
 use BAGArt\TelegramBot\TgApi\Methods\DTO\SendMessageMethodDTO;
@@ -22,6 +25,7 @@ use BAGArt\TelegramBot\TgApi\Types\DTO\UserTypeDTO;
 use BAGArt\TelegramBot\TgApi\Types\DTO\VoiceTypeDTO;
 use BAGArt\TelegramBot\TgApi\Types\Enum\ChatPropTypeEnum;
 use BAGArt\TelegramBot\TgBotSetupFactory;
+use BAGArt\TelegramBotManagement\Models\TgBot;
 use BAGArt\TelegramBotStt\Models\SttTranscription;
 use BAGArt\TelegramBotStt\ModuleFactory;
 use BAGArt\TelegramBotStt\Processing\TextCommandProcessor;
@@ -29,6 +33,7 @@ use BAGArt\TelegramBotStt\Processing\TranscribeProcessor;
 use BAGArt\TelegramBotStt\Provider\Dto\SttRequest;
 use BAGArt\TelegramBotStt\Provider\Dto\SttResult;
 use BAGArt\TelegramBotStt\Provider\SttProviderContract;
+use BAGArt\TelegramBotStt\Support\SttStats;
 use BAGArt\TelegramBotStt\Ui\CallbackRoute;
 use Illuminate\Http\Client\Factory;
 
@@ -43,7 +48,8 @@ beforeEach(function () {
     config(['stt.superadmins' => []]);
     config(['stt.tmp_dir' => sys_get_temp_dir().'/stt-e2e-'.bin2hex(random_bytes(4))]);
 
-    $this->box = new class () {
+    $this->box = new class
+    {
         public int $calls = 0;
     };
 
@@ -58,7 +64,7 @@ beforeEach(function () {
         '*' => fn () => $http->response(['ok' => true], 200),
     ]);
 
-    BAGArt\TelegramBotManagement\Models\TgBot::create(['bot_id' => 'test_bot', 'token' => '123:test']);
+    TgBot::create(['bot_id' => 'test_bot', 'token' => '123:test']);
 
     ModuleFactory::settings()->patch('test_bot', 777, ['enabled' => true]);
 });
@@ -71,7 +77,8 @@ afterEach(function () {
 
 function sstFakeApiClient(): TgBotApiDTOClientContract
 {
-    return new class () implements TgBotApiDTOClientContract {
+    return new class implements TgBotApiDTOClientContract
+    {
         public function request(TgBotConfig $botConfig, TgApiMethodDTOContract $dto, ?int $timeout = null): TgApiResponse
         {
             if ($dto instanceof GetFileMethodDTO) {
@@ -99,11 +106,11 @@ function sstFakeApiClient(): TgBotApiDTOClientContract
 
 function sstFakeProvider(object $box): SttProviderContract
 {
-    return new class ($box) implements SttProviderContract {
+    return new class($box) implements SttProviderContract
+    {
         public function __construct(
             private readonly object $box,
-        ) {
-        }
+        ) {}
 
         public function transcribe(SttRequest $request): SttResult
         {
@@ -183,7 +190,8 @@ function sstGroupText(int $userId, string $text, ?MessageTypeDTO $replyTo = null
 
 function sstSenderSpy(): TgSenderContract
 {
-    return new class () implements TgSenderContract {
+    return new class implements TgSenderContract
+    {
         /** @var list<TgApiMethodDTOContract> */
         public array $sent = [];
 
@@ -217,9 +225,9 @@ function sstTextCommand(TgSenderContract $spy): TextCommandProcessor
 }
 
 it('discovers the stt module with /text registered and disabled by default', function () {
-    expect(app(BAGArt\TelegramBot\Modules\TgModuleRegistry::class)->has('stt'))->toBeTrue()
-        ->and(app(BAGArt\TelegramBot\Modules\TgModuleRegistry::class)->defaultEnabledOf('stt'))->toBeFalse()
-        ->and(app(BAGArt\TelegramBot\Modules\TgCommandRegistry::class)->has('text'))->toBeTrue();
+    expect(app(TgModuleRegistry::class)->has('stt'))->toBeTrue()
+        ->and(app(TgModuleRegistry::class)->defaultEnabledOf('stt'))->toBeFalse()
+        ->and(app(TgCommandRegistry::class)->has('text'))->toBeTrue();
 });
 
 it('transcribes a private auto-mode voice into a threaded reply with a one-time privacy notice (US1/US2)', function () {
@@ -293,8 +301,8 @@ it('denies group panel to non-admins and keeps opt-out groups silent', function 
     $update = new UpdateTypeDTO(updateId: 20, message: sstGroupVoice(424242, 21));
 
     $selector = new RegisteredUpdateProcessorSelector(
-        serviceConfig: new TgServiceConfig(),
-        botSetup: app(TgBotSetupFactory::class)->create(serviceConfig: new TgServiceConfig()),
+        serviceConfig: new TgServiceConfig,
+        botSetup: app(TgBotSetupFactory::class)->create(serviceConfig: new TgServiceConfig),
         moduleEnablement: app(ModuleEnablementContract::class),
     );
 
@@ -332,8 +340,8 @@ it('routes the panel toggle callback through the selector (US2)', function () {
     $update = new UpdateTypeDTO(updateId: 9, callbackQuery: $query);
 
     $selector = new RegisteredUpdateProcessorSelector(
-        serviceConfig: new TgServiceConfig(),
-        botSetup: app(TgBotSetupFactory::class)->create(serviceConfig: new TgServiceConfig()),
+        serviceConfig: new TgServiceConfig,
+        botSetup: app(TgBotSetupFactory::class)->create(serviceConfig: new TgServiceConfig),
         moduleEnablement: app(ModuleEnablementContract::class),
     );
 
@@ -347,11 +355,11 @@ it('routes the panel toggle callback through the selector (US2)', function () {
 });
 
 it('exposes stt_* series through the /health/metrics hook (R1)', function () {
-    BAGArt\TelegramBotStt\Support\SttStats::forCurrentStore()?->incTotal('metrics_bot', 'groq-whisper-v3', 'ok');
-    BAGArt\TelegramBotStt\Support\SttStats::forCurrentStore()?->incQuotaBlocked('metrics_bot');
-    BAGArt\TelegramBotStt\Support\SttStats::forCurrentStore()?->recordLatency('groq-whisper-v3', 700);
+    SttStats::forCurrentStore()?->incTotal('metrics_bot', 'groq-whisper-v3', 'ok');
+    SttStats::forCurrentStore()?->incQuotaBlocked('metrics_bot');
+    SttStats::forCurrentStore()?->recordLatency('groq-whisper-v3', 700);
 
-    $user = App\Models\User::factory()->create();
+    $user = User::factory()->create();
 
     $this->actingAs($user)->get('/health/metrics')
         ->assertOk()

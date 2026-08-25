@@ -5,6 +5,7 @@ declare(strict_types=1);
 use BAGArt\TelegramBotManagement\Models\TgBot;
 use BAGArt\TelegramBotStt\Models\SttTranscription;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /*
  * stt:prune retention sweep (RFC §10.5): old transcription rows and stale
@@ -32,7 +33,7 @@ afterEach(function () {
 function sstPruneRow(string $uniqueId, string $createdAt): void
 {
     DB::table('stt_transcriptions')->insert([
-        'id' => (string) Illuminate\Support\Str::uuid(),
+        'id' => (string) Str::uuid(),
         'bot_id' => 'test_bot',
         'chat_id' => 777,
         'message_id' => random_int(1, 99999),
