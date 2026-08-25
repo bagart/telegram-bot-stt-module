@@ -7,6 +7,7 @@
     <testsuites>
         <testsuite name="SttModule">
             <directory>tests/Unit</directory>
+            <directory>tests/Feature</directory>
         </testsuite>
     </testsuites>
 </phpunit>
