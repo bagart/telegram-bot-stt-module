@@ -17,17 +17,16 @@ RFC: `docs/tasks/todo.stt.md`. Sibling TTS module is fully independent
 
 ## Install
 
+Dev mode (this monorepo): path repository + PSR-4 mapping live in the host
+`composer.json`; provider is listed in `bootstrap/providers.php`.
+
 ```bash
-# path repository + autoload entries live in the host composer.json
 composer dump-autoload
 php artisan migrate          # stt_tokens, stt_transcriptions
 ```
 
-Register in `bootstrap/providers.php`:
-
-```php
-BAGArt\TelegramBotStt\TelegramBotSttServiceProvider::class,
-```
+Prod mode (servers): `cmd/deps/install --mode=prod` resolves
+`bagart/telegram-bot-stt-module` from VCS sources via `composer.prod.json`.
 
 ## Usage
 
@@ -77,7 +76,7 @@ Key invariants (see RFC for full rationale):
   tmpfile; a 19 MB voice never sits in PHP memory; tmpfiles are unlinked in
   `finally` and swept by `stt:prune`.
 - **Dedupe serializer** — `stt_transcriptions` unique `(bot_id, file_unique_id)`
-  row is reserved *before* slow work; Telegram redelivery collapses into an
+  index is reserved *before* slow work; Telegram redelivery collapses into an
   instant cached reply.
 - **Token hygiene** — provider keys use the Eloquent `encrypted` cast and are
   decrypted only inside `VaultTokenResolver`; Telegram file URLs embed the bot
@@ -90,6 +89,20 @@ Key invariants (see RFC for full rationale):
 - **Budget** — wall-clock watchdog (default 30 s) aborts with `UNAVAILABLE`;
   download ≤8 s, provider call ≤20 s.
 
+## Deviations from the original RFC (v1.0)
+
+- No `stt_chat_access` table: the inviter branch was dropped from
+  canManage(); group access = Telegram admins with delete rights +
+  superadmins; private chat = peer user (keeps the schema at two tables).
+- Pending text inputs live in the cache store (15-min TTL), not a DB table.
+- Typing indicator is sent at pipeline start and before the provider call
+  instead of a ~10 s refresh loop.
+- Menu callback scope derives privacy from the embedded route chatId sign
+  (positive = private): the parsed CallbackQuery DTO carries no usable
+  originating-message payload in this platform's DTO layer.
+- Deferred by default (RFC open questions): `audio`/`video_note`
+  transcription, per-user quotas, verbose_json segments storage.
+
 ## Testing
 
 ```bash
@@ -98,11 +111,16 @@ composer test                          # from this directory (host vendor)
 php artisan test --testsuite=SttModule
 ```
 
-54 tests / 208 assertions: callback grammar edges, settings clamps, renderer
+65 tests / 250 assertions: callback grammar edges, settings clamps, renderer
 escaping/truncation, provider catalog + SSRF rejection matrix, breaker
 transitions, quota enforcement/fail-open, adapter contract (multipart fields,
 Bearer, error taxonomy, size caps, token-leak guard), menu keyboard layout,
 access rules incl. the private-chat peer rule.
+
+`LoopbackWireTest` goes beyond `Http::fake()`: it forks a real loopback HTTP
+server and runs admin custom-provider JSON → SSRF guard → ConfigResolver →
+adapter over actual sockets — real multipart encoding, Bearer transmission,
+JSON parsing, tokenless mode, revoked-key → `AUTH`.
 
 Plus orchestration units (`VoiceTranscriptionOrchestrationTest`): §7bis step
 machine against contract fakes — caps, silent/emoji/message surfacing modes,
