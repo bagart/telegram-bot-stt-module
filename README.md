@@ -37,6 +37,25 @@ Prod mode (servers): `cmd/deps/install --mode=prod` resolves
    voice in a private chat (auto mode).
 4. Health: `php artisan stt:doctor [--bot=…] [--net]`.
 
+### Self-hosted Whisper via the platform docker stack
+
+The platform ships an opt-in `whisper` compose service (speaches,
+OpenAI-compatible) behind the `stt` Compose profile — see
+`docs/docker/README.md`. It is off by default: nothing is pulled or started
+until `STT_WHISPER_ENABLED=true` in `.env`, then `./cmd/docker/up stt`.
+speaches expects full HuggingFace model IDs, so configure it through the
+admin *custom provider* JSON rather than the `local-whisper` preset:
+
+```json
+{"name": "Local whisper", "base_url": "http://localhost:8000/v1",
+ "model": "Systran/faster-whisper-small", "token": "<STT_WHISPER_API_KEY>"}
+```
+
+`small`/`base` fit the 30 s budget on CPU boxes (≈6 s p50 for an 11 s voice);
+`large-v3` measures ≈28 s p50 — over budget. From inside the docker network
+use `http://whisper:8000/v1`; the SSRF guard allows plain http for such
+local targets.
+
 ### Schedule
 
 Add to host `routes/console.php` (already wired):
