@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /*
 |--------------------------------------------------------------------------
-| STT Module (bagart/telegram-bot-stt-module)
+| STT Module (bagart/tgbot-module-stt)
 |--------------------------------------------------------------------------
 |
 | Voice-to-text module. Per-chat settings live in

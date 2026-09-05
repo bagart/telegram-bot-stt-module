@@ -1,4 +1,4 @@
-# telegram-bot-stt-module
+# tgbot-module-stt
 
 Speech-to-text module for the [BAGArt Telegram bot platform](../../../): turns
 voice messages into threaded text replies.
@@ -26,7 +26,7 @@ php artisan migrate          # stt_tokens, stt_transcriptions
 ```
 
 Prod mode (servers): `cmd/deps/install --mode=prod` resolves
-`bagart/telegram-bot-stt-module` from VCS sources via `composer.prod.json`.
+`bagart/tgbot-module-stt` from VCS sources via `composer.prod.json`.
 
 ## Usage
 
