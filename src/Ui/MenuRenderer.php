@@ -21,7 +21,8 @@ class MenuRenderer
 
     public function __construct(
         private readonly ProviderRegistry $providers,
-    ) {}
+    ) {
+    }
 
     /**
      * @return array{text: string, keyboard: InlineKeyboardMarkupTypeDTO}

@@ -20,7 +20,8 @@ class SttSettingsService
     public function __construct(
         private readonly ModuleSettingsContract $settings,
         private readonly ModuleEnablementContract $enablement,
-    ) {}
+    ) {
+    }
 
     public function get(string $botId, int $chatId, bool $isPrivateChat): SttSettings
     {

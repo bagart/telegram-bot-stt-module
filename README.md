@@ -181,3 +181,9 @@ stt_quota_blocked_total{bot_id}
 stt_latency_bucket{provider,le}            # coarse 250ms..25s buckets (gauge)
 stt_breaker{provider}                      # 0 closed | 1 open | 2 half-open
 ```
+
+## Menu integration
+
+Menu-hub surface per `telegram-platform-menu/docs/tasks/menu_integration.md` (M-3a):
+`SttWebUi` — §8.3 schema form over the same raw keys `SttSettings::fromArray()`
+reads. API tokens and custom-provider JSON stay in-chat (§8.5 secrets rule).

@@ -14,6 +14,7 @@ use BAGArt\TelegramBotStt\Processing\MenuProcessor;
 use BAGArt\TelegramBotStt\Processing\PendingInputProcessor;
 use BAGArt\TelegramBotStt\Processing\TextCommandProcessor;
 use BAGArt\TelegramBotStt\Processing\TranscribeProcessor;
+use BAGArt\TelegramBotStt\Web\SttWebUi;
 
 /**
  * STT module (todo.stt.md): voice → threaded text via /text and an opt-in
@@ -31,6 +32,7 @@ class SttModule implements TgModuleContract
             capabilities: [
                 TgModuleCapability::Processor,
                 TgModuleCapability::Command,
+                TgModuleCapability::Ui,
             ],
             defaultEnabled: false,
             failClosed: false,
@@ -43,5 +45,6 @@ class SttModule implements TgModuleContract
         $registrar->processor(MessageTypeDTO::class, PendingInputProcessor::class);
         $registrar->processor(CallbackQueryTypeDTO::class, MenuProcessor::class);
         $registrar->command(TextCommandProcessor::NAME, TextCommandProcessor::class);
+        $registrar->webUi(SttWebUi::class);
     }
 }

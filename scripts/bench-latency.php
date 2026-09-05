@@ -58,7 +58,7 @@ $config = new VoiceProviderConfig(
     maxResponseBytes: 8388608,
 );
 
-$adapter = new OpenAiCompatibleStt;
+$adapter = new OpenAiCompatibleStt();
 $request = new SttRequest(
     audioPath: $file,
     mimeType: mime_content_type($file) ?: 'audio/ogg',

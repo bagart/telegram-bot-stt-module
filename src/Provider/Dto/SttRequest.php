@@ -13,5 +13,6 @@ final readonly class SttRequest
         public ?int $durationSec,
         public ?string $languageHint,
         public VoiceProviderConfig $provider,
-    ) {}
+    ) {
+    }
 }

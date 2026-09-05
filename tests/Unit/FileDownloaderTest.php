@@ -29,7 +29,7 @@ final class FileDownloaderTest extends TestCase
             filePath: 'voice/file_10.oga',
         ));
 
-        $downloader = new FileDownloader($api, new Factory, tmpDirOverride: sys_get_temp_dir().'/stt-test');
+        $downloader = new FileDownloader($api, new Factory(), tmpDirOverride: sys_get_temp_dir().'/stt-test');
 
         try {
             $downloader->download($this->botConfig(), $this->voice(), maxFileMb: 19);
@@ -43,7 +43,7 @@ final class FileDownloaderTest extends TestCase
     {
         $api = new FakeFileApi(new FileTypeDTO(fileId: 'F1', fileUniqueId: 'U1', fileSize: '1024', filePath: null));
 
-        $downloader = new FileDownloader($api, new Factory, tmpDirOverride: sys_get_temp_dir().'/stt-test');
+        $downloader = new FileDownloader($api, new Factory(), tmpDirOverride: sys_get_temp_dir().'/stt-test');
 
         try {
             $downloader->download($this->botConfig(), $this->voice(), 19);
@@ -57,7 +57,7 @@ final class FileDownloaderTest extends TestCase
     {
         $api = new FakeFileApi(new FileTypeDTO(fileId: 'F1', fileUniqueId: 'U1', fileSize: '1024', filePath: 'voice/file_10.oga'));
 
-        $http = new Factory;
+        $http = new Factory();
         $http->fake(['*' => $http->response('nope', 404)]);
 
         $downloader = new FileDownloader($api, $http, tmpDirOverride: sys_get_temp_dir().'/stt-test');
@@ -86,7 +86,8 @@ final class FakeFileApi implements TgBotApiDTOClientContract
 {
     public function __construct(
         private readonly FileTypeDTO $file,
-    ) {}
+    ) {
+    }
 
     public function request(TgBotConfig $botConfig, TgApiMethodDTOContract $dto, ?int $timeout = null): TgApiResponse
     {
@@ -100,7 +101,9 @@ final class FakeFileApi implements TgBotApiDTOClientContract
         throw new \RuntimeException('not used in tests');
     }
 
-    public function tick(int $systemPressure): void {}
+    public function tick(int $systemPressure): void
+    {
+    }
 
     public function pressure(): int
     {

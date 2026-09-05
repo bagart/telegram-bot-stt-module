@@ -33,7 +33,8 @@ class AccessService
 
     public function __construct(
         private readonly TgBotApiDTOClientContract $api,
-    ) {}
+    ) {
+    }
 
     public function isSuperadmin(int|string $userTgId): bool
     {
@@ -113,7 +114,7 @@ class AccessService
         }
 
         try {
-            $response = $this->api->request($botConfig, new GetMeMethodDTO);
+            $response = $this->api->request($botConfig, new GetMeMethodDTO());
 
             if (! $response->ok || ! $response->result instanceof UserTypeDTO) {
                 return null;

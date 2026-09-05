@@ -21,7 +21,8 @@ final class FakeProvider implements SttProviderContract
     public function __construct(
         private readonly ?ProviderException $throw = null,
         private readonly string $text = 'расшифрованный текст',
-    ) {}
+    ) {
+    }
 
     public function transcribe(SttRequest $request): SttResult
     {

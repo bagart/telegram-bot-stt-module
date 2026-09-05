@@ -17,7 +17,8 @@ class ConfigResolver
         private readonly ProviderRegistry $registry,
         private readonly int $defaultTimeoutSeconds,
         private readonly int $defaultMaxResponseBytes,
-    ) {}
+    ) {
+    }
 
     public function resolve(SttSettings $settings, ?string $tokenValue = null): VoiceProviderConfig
     {

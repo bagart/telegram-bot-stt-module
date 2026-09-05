@@ -20,7 +20,8 @@ final class QuotaCounter
 
     public function __construct(
         private readonly CacheRepository $cache,
-    ) {}
+    ) {
+    }
 
     public function allowed(string $botId, int $chatId, int $dailyQuota): bool
     {

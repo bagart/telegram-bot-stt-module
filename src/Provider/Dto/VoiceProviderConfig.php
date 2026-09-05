@@ -23,5 +23,6 @@ final readonly class VoiceProviderConfig
         public int $maxResponseBytes,
         /** Target audio container when the provider rejects native ogg/opus. */
         public ?string $containerFormat = null,
-    ) {}
+    ) {
+    }
 }

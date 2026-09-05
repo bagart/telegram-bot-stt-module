@@ -1,6 +1,6 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "bagart/telegram-bot-stt-module",
+    "name": "bagart/tgbot-module-stt",
     "description": "Speech-to-text module for the Telegram bot platform: /text command, auto transcription mode, OpenAI-compatible STT providers (Groq Whisper, self-hosted)",
     "type": "library",
     "license": "MIT",
@@ -40,5 +40,28 @@
         "test": [
             "@php ../../../vendor/bin/phpunit --testsuite SttModule"
         ]
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../telegram-bot-lib"
+        },
+        {
+            "type": "path",
+            "url": "../php-async-kernel-lib"
+        },
+        {
+            "type": "path",
+            "url": "../php-async-kernel-client"
+        },
+        {
+            "type": "path",
+            "url": "../telegram-platform-devops-baseline"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "bagart/telegram-platform-devops-baseline": "@dev"
     }
 }

@@ -27,9 +27,10 @@ final class FileDownloader
 
     public function __construct(
         private readonly TgBotApiDTOClientContract $api,
-        private readonly Factory $http = new Factory,
+        private readonly Factory $http = new Factory(),
         private readonly ?string $tmpDirOverride = null,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws ProviderException PayloadTooLarge | Unavailable

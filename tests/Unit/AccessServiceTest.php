@@ -17,7 +17,7 @@ final class AccessServiceTest extends TestCase
 {
     public function test_private_chat_peer_manages_own_settings(): void
     {
-        $service = new AccessService(new NullApiClient);
+        $service = new AccessService(new NullApiClient());
         $user = $this->user(555);
 
         self::assertTrue($service->canManage($this->botConfig(), 555, $user, isPrivateChat: true));
@@ -25,7 +25,7 @@ final class AccessServiceTest extends TestCase
 
     public function test_private_chat_other_user_is_denied(): void
     {
-        $service = new AccessService(new NullApiClient);
+        $service = new AccessService(new NullApiClient());
 
         self::assertFalse($service->canManage($this->botConfig(), 555, $this->user(777), isPrivateChat: true));
     }
@@ -33,7 +33,7 @@ final class AccessServiceTest extends TestCase
     public function test_group_member_without_telegram_check_is_denied(): void
     {
         // NullApiClient never returns admin lists → fail closed for grants
-        $service = new AccessService(new NullApiClient);
+        $service = new AccessService(new NullApiClient());
 
         self::assertFalse($service->canManage($this->botConfig(), -100999, $this->user(555), isPrivateChat: false));
     }
@@ -70,7 +70,9 @@ final class NullApiClient implements TgBotApiDTOClientContract
         throw new \RuntimeException('network disabled in unit tests');
     }
 
-    public function tick(int $systemPressure): void {}
+    public function tick(int $systemPressure): void
+    {
+    }
 
     public function pressure(): int
     {

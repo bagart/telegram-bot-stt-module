@@ -52,7 +52,8 @@ final readonly class SttSettings
         public string $locale,
         public bool $noticeShown,
         public ?array $customProvider,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $raw

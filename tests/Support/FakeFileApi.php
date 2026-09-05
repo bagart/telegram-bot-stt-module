@@ -20,7 +20,8 @@ final class FakeFileApi implements TgBotApiDTOClientContract
 {
     public function __construct(
         private readonly FileTypeDTO $file,
-    ) {}
+    ) {
+    }
 
     public function request(TgBotConfig $botConfig, TgApiMethodDTOContract $dto, ?int $timeout = null): TgApiResponse
     {
@@ -36,7 +37,9 @@ final class FakeFileApi implements TgBotApiDTOClientContract
         throw new \RuntimeException('not used in tests');
     }
 
-    public function tick(int $systemPressure): void {}
+    public function tick(int $systemPressure): void
+    {
+    }
 
     public function pressure(): int
     {

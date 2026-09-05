@@ -23,7 +23,8 @@ final class ChatSemaphore
 
     public function __construct(
         private readonly CacheRepository $cache,
-    ) {}
+    ) {
+    }
 
     public function acquire(string $botId, int $chatId): bool
     {

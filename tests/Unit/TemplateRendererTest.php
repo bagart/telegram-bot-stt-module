@@ -13,7 +13,7 @@ final class TemplateRendererTest extends TestCase
     public function test_replaces_placeholders_and_escapes_html(): void
     {
         $settings = SttSettings::fromArray(['template' => "🎙 {text}\n— {lang} · {dur}s"], true);
-        $out = (new TemplateRenderer)->render($settings, 'Привет <b>жирный</b>', 'ru', 14);
+        $out = (new TemplateRenderer())->render($settings, 'Привет <b>жирный</b>', 'ru', 14);
 
         self::assertSame("🎙 Привет &lt;b&gt;жирный&lt;/b&gt;\n— ru · 14s", $out);
     }
@@ -21,7 +21,7 @@ final class TemplateRendererTest extends TestCase
     public function test_truncates_to_telegram_4096_limit(): void
     {
         $settings = SttSettings::fromArray([], true);
-        $out = (new TemplateRenderer)->render($settings, str_repeat('а', 9000), null, null);
+        $out = (new TemplateRenderer())->render($settings, str_repeat('а', 9000), null, null);
 
         self::assertLessThanOrEqual(4096, mb_strlen($out));
         self::assertSame(4096, mb_strlen($out));
@@ -32,6 +32,6 @@ final class TemplateRendererTest extends TestCase
         // EMPTY_RESULT is handled by the orchestrator before rendering; the
         // renderer itself must not swallow content silently.
         $settings = SttSettings::fromArray(['template' => '{text}'], true);
-        self::assertSame('', (new TemplateRenderer)->render($settings, '', null, null));
+        self::assertSame('', (new TemplateRenderer())->render($settings, '', null, null));
     }
 }

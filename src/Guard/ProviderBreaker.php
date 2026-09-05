@@ -31,7 +31,8 @@ final class ProviderBreaker
         private readonly CacheRepository $cache,
         /** Settable so callers (orchestrator) can surface degradation once. */
         public bool $degraded = false,
-    ) {}
+    ) {
+    }
 
     public function allow(string $providerKey): bool
     {

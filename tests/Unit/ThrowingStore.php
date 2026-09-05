@@ -16,7 +16,8 @@ final class ThrowingStore implements Store
 
     public function __construct(
         private readonly Store $inner,
-    ) {}
+    ) {
+    }
 
     public function get($key): mixed
     {

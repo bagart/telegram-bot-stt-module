@@ -213,13 +213,13 @@ final class VoiceTranscriptionOrchestrationTest extends TestCase
         ?Repository $cache = null,
     ): array {
         $cache ??= TestCache::repository();
-        $provider ??= new FakeProvider;
+        $provider ??= new FakeProvider();
         $settingsStub = new StubSettingsService($settingsRaw);
         $quota ??= new QuotaCounter($cache);
         $breaker ??= new ProviderBreaker($cache);
-        $spy = new SenderSpy;
+        $spy = new SenderSpy();
 
-        $http = new Factory;
+        $http = new Factory();
         // A callable fake: response instances are single-consumption when
         // streamed into ->sink(); a shared instance would be empty on run 2.
         $http->fake([
@@ -237,7 +237,7 @@ final class VoiceTranscriptionOrchestrationTest extends TestCase
             tmpDirOverride: $this->tmpDir,
         );
 
-        $resolver = new ConfigResolver(new ProviderRegistry, 20, 8388608);
+        $resolver = new ConfigResolver(new ProviderRegistry(), 20, 8388608);
         $stats = new SttStats($cache);
 
         $service = new VoiceTranscriptionService(
@@ -246,14 +246,14 @@ final class VoiceTranscriptionOrchestrationTest extends TestCase
             provider: $provider,
             downloader: $downloader,
             converter: new FfmpegConverter('none'),
-            recorder: new TranscriptionRecorder,
-            renderer: new TemplateRenderer,
+            recorder: new TranscriptionRecorder(),
+            renderer: new TemplateRenderer(),
             quota: $quota,
             semaphore: new ChatSemaphore($cache),
             global: new GlobalConcurrency($cache, 4),
             breaker: $breaker,
             sender: $spy,
-            tokens: new VaultTokenResolver,
+            tokens: new VaultTokenResolver(),
             stats: $stats,
             budgetSeconds: $budgetSeconds,
         );

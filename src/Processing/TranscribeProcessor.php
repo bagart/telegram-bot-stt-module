@@ -23,7 +23,8 @@ class TranscribeProcessor implements TgModuleProcessorContract
 {
     public function __construct(
         private readonly VoiceTranscriptionService $transcription,
-    ) {}
+    ) {
+    }
 
     public static function moduleId(): string
     {
@@ -69,7 +70,9 @@ class TranscribeProcessor implements TgModuleProcessorContract
         $this->transcription->transcribe($botConfig, $dto, $dto->voice, 'auto');
     }
 
-    public function onException(ProcessorErrorContext $context): void {}
+    public function onException(ProcessorErrorContext $context): void
+    {
+    }
 
     /**
      * Private chats: auto mode setting decides. Groups: opt-in + trigger

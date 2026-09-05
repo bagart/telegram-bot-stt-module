@@ -15,7 +15,7 @@ final class ProviderRegistryTest extends TestCase
 {
     public function test_ships_catalog_presets(): void
     {
-        $registry = new ProviderRegistry;
+        $registry = new ProviderRegistry();
         $keys = array_keys($registry->all());
 
         foreach (['groq-whisper-v3', 'groq-whisper-turbo', 'openai-whisper', 'local-whisper'] as $expected) {
@@ -31,7 +31,7 @@ final class ProviderRegistryTest extends TestCase
 
     public function test_only_local_preset_may_speak_http(): void
     {
-        foreach ((new ProviderRegistry)->all() as $preset) {
+        foreach ((new ProviderRegistry())->all() as $preset) {
             if (str_starts_with($preset->baseUrl, 'http://')) {
                 self::assertTrue(str_contains($preset->baseUrl, 'localhost'), $preset->key);
                 self::assertFalse($preset->needsToken, $preset->key);
@@ -76,7 +76,7 @@ final class ProviderRegistryTest extends TestCase
 
     public function test_custom_config_normalization(): void
     {
-        $registry = new ProviderRegistry;
+        $registry = new ProviderRegistry();
         $config = $registry->validateCustomConfig((string) json_encode([
             'base_url' => 'https://my.host/api/',
             'model' => str_repeat('m', 300),
@@ -96,7 +96,7 @@ final class ProviderRegistryTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        (new ProviderRegistry)->validateCustomConfig((string) json_encode([
+        (new ProviderRegistry())->validateCustomConfig((string) json_encode([
             'base_url' => 'https://my.host/api',
         ]));
     }
@@ -105,6 +105,6 @@ final class ProviderRegistryTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        (new ProviderRegistry)->validateCustomConfig('{broken');
+        (new ProviderRegistry())->validateCustomConfig('{broken');
     }
 }

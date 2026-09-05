@@ -43,7 +43,7 @@ final class ProviderBreakerTest extends TestCase
     public function test_degraded_cache_fails_open(): void
     {
         $repo = TestCache::repository();
-        $store = new ThrowingStore(new ArrayStore);
+        $store = new ThrowingStore(new ArrayStore());
         $breaker = new ProviderBreaker(new Repository($store));
 
         $store->throwing = true;

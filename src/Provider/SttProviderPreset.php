@@ -17,5 +17,6 @@ final readonly class SttProviderPreset
         /** Short cost label shown in the picker ("free tier", "paid", …). */
         public string $costLabel = '',
         public ?string $containerFormat = null,
-    ) {}
+    ) {
+    }
 }

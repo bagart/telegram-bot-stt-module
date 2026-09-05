@@ -43,7 +43,7 @@ final class QuotaCounterTest extends TestCase
 
     public function test_degraded_cache_fails_open(): void
     {
-        $store = new ThrowingStore(new ArrayStore);
+        $store = new ThrowingStore(new ArrayStore());
         $counter = new QuotaCounter(TestCache::decorate($store));
 
         $store->throwing = true;
@@ -53,7 +53,7 @@ final class QuotaCounterTest extends TestCase
 
     public function test_increment_survives_degraded_cache(): void
     {
-        $store = new ThrowingStore(new ArrayStore);
+        $store = new ThrowingStore(new ArrayStore());
         $counter = new QuotaCounter(TestCache::decorate($store));
 
         $store->throwing = true;

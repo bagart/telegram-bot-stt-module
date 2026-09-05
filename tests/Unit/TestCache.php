@@ -19,13 +19,13 @@ final class TestCache
 {
     public static function repository(): CacheRepository
     {
-        return self::decorate(new ArrayStore);
+        return self::decorate(new ArrayStore());
     }
 
     public static function decorate(Store $store): CacheRepository
     {
         $repository = new Repository($store);
-        $repository->setEventDispatcher(new Dispatcher);
+        $repository->setEventDispatcher(new Dispatcher());
 
         return $repository;
     }

@@ -104,7 +104,7 @@ final class SttDoctorCommand extends Command
     {
         $failures = 0;
 
-        foreach ((new ProviderRegistry)->all() as $preset) {
+        foreach ((new ProviderRegistry())->all() as $preset) {
             try {
                 ProviderRegistry::assertSafeBaseUrl($preset->baseUrl);
                 $this->line("✔ preset {$preset->key} → {$preset->baseUrl}");
@@ -180,7 +180,7 @@ final class SttDoctorCommand extends Command
     {
         $breaker = new ProviderBreaker($cache);
 
-        foreach ((new ProviderRegistry)->all() as $preset) {
+        foreach ((new ProviderRegistry())->all() as $preset) {
             $state = match ($breaker->state($preset->key)) {
                 ProviderBreaker::STATE_CLOSED => 'closed',
                 ProviderBreaker::STATE_OPEN => 'OPEN',

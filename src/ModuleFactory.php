@@ -53,7 +53,7 @@ final class ModuleFactory
 
     public static function providers(): ProviderRegistry
     {
-        return new ProviderRegistry;
+        return new ProviderRegistry();
     }
 
     public static function menuRenderer(): MenuRenderer
@@ -101,14 +101,14 @@ final class ModuleFactory
                 tmpDirOverride: self::tmpDir(),
             ),
             converter: self::converter(),
-            recorder: new TranscriptionRecorder,
-            renderer: new TemplateRenderer,
+            recorder: new TranscriptionRecorder(),
+            renderer: new TemplateRenderer(),
             quota: new QuotaCounter($cache),
             semaphore: new ChatSemaphore($cache),
             global: new GlobalConcurrency($cache, (int) config('stt.global_concurrency', 4)),
             breaker: new ProviderBreaker($cache),
             sender: $sender,
-            tokens: new VaultTokenResolver,
+            tokens: new VaultTokenResolver(),
             stats: new SttStats($cache),
             budgetSeconds: (int) config('stt.budget_seconds', 30),
         );

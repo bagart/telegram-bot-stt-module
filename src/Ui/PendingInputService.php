@@ -24,7 +24,8 @@ class PendingInputService
     public function __construct(
         private readonly CacheRepository $cache,
         private readonly int $ttlMinutes = 15,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $payload

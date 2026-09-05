@@ -58,7 +58,8 @@ class VoiceTranscriptionService
         private readonly VaultTokenResolver $tokens,
         private readonly SttStats $stats,
         private readonly int $budgetSeconds = 30,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  'auto'|'command'  $source

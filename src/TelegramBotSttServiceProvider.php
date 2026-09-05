@@ -14,18 +14,9 @@ final class TelegramBotSttServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/stt.php', 'stt');
 
-        // Composer-installed module discovery (config/telegram.php contract)
-        $providers = (array) Config::get('telegram.modules_providers', []);
-        Config::set('telegram.modules_providers', array_values(array_unique(array_merge(
-            $providers,
-            [SttModule::class],
-        ))));
-
-        $this->commands([
-            Console\SttPruneCommand::class,
-            Console\SttDoctorCommand::class,
-        ]);
-
+        // The stt:prune schedule is declared in config/tg_modules.php
+        // (schedule) and registered by the module engine, with
+        // schedule-overrides.php user overrides applied.
         // Singleton wiring: container-managed contracts only (DI rule, §5).
         $this->app->singleton(SttSettingsService::class);
 

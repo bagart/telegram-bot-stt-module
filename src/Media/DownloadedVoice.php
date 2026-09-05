@@ -13,7 +13,8 @@ final readonly class DownloadedVoice
         public ?string $mimeType,
         /** Telegram-side duration in seconds (from the Voice DTO). */
         public int $durationSec,
-    ) {}
+    ) {
+    }
 
     public function destroy(): void
     {

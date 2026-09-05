@@ -16,7 +16,7 @@ final class MenuRendererTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->menu = new MenuRenderer(new ProviderRegistry);
+        $this->menu = new MenuRenderer(new ProviderRegistry());
     }
 
     public function test_main_keyboard_carries_valid_callback_data_within_64_bytes(): void

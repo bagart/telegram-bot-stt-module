@@ -20,7 +20,8 @@ final class GlobalConcurrency
     public function __construct(
         private readonly CacheRepository $cache,
         private readonly int $cap,
-    ) {}
+    ) {
+    }
 
     public function acquire(): bool
     {

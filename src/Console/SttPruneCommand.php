@@ -9,8 +9,8 @@ use Illuminate\Console\Command;
 
 /**
  * Retention sweep (§10.5): prunes transcription history older than
- * stt.retention_days and tmpfiles by mtime. Scheduled from the host
- * routes/console.php (`stt:prune`, gated by telegram.schedule_stt_prune_enabled).
+ * stt.retention_days and tmpfiles by mtime. Declared in config/tg_modules.php
+ * (schedule) and registered by the module engine.
  */
 final class SttPruneCommand extends Command
 {

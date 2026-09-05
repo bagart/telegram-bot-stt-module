@@ -31,8 +31,9 @@ final class OpenAiCompatibleStt implements SttProviderContract
     private const RETRY_AFTER_CAP_SECONDS = 30;
 
     public function __construct(
-        private readonly Factory $http = new Factory,
-    ) {}
+        private readonly Factory $http = new Factory(),
+    ) {
+    }
 
     public function transcribe(SttRequest $request): SttResult
     {

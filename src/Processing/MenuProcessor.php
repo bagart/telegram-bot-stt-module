@@ -34,7 +34,8 @@ class MenuProcessor implements TgModuleProcessorContract
 {
     public function __construct(
         private readonly TgSenderContract $sender,
-    ) {}
+    ) {
+    }
 
     public static function moduleId(): string
     {
@@ -350,5 +351,7 @@ class MenuProcessor implements TgModuleProcessorContract
         ));
     }
 
-    public function onException(ProcessorErrorContext $context): void {}
+    public function onException(ProcessorErrorContext $context): void
+    {
+    }
 }

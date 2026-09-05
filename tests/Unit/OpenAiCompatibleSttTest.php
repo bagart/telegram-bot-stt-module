@@ -29,7 +29,7 @@ final class OpenAiCompatibleSttTest extends TestCase
 
     public function test_sends_multipart_fields_and_bearer_and_parses_text(): void
     {
-        $http = new Factory;
+        $http = new Factory();
         $http->fake([
             'api.groq.com/*' => $http->response(['text' => '  Привет, мир  '], 200),
         ]);
@@ -53,12 +53,16 @@ final class OpenAiCompatibleSttTest extends TestCase
 
     public function test_omits_authorization_when_no_token(): void
     {
-        $http = new Factory;
+        $http = new Factory();
         $http->fake(['*' => $http->response(['text' => 'ok'], 200)]);
 
         $config = $this->config(token: null);
         (new OpenAiCompatibleStt($http))->transcribe(new SttRequest(
-            self::AUDIO, 'audio/ogg', null, null, $config,
+            self::AUDIO,
+            'audio/ogg',
+            null,
+            null,
+            $config,
         ));
 
         $http->assertSent(fn (Request $r): bool => ! $r->hasHeader('Authorization'));
@@ -76,7 +80,7 @@ final class OpenAiCompatibleSttTest extends TestCase
         ];
 
         foreach ($cases as [$status, $expectedCode]) {
-            $http = new Factory;
+            $http = new Factory();
             $http->fake(['*' => $http->response(['error' => 'x'], $status)]);
 
             try {
@@ -90,7 +94,7 @@ final class OpenAiCompatibleSttTest extends TestCase
 
     public function test_empty_transcription_maps_to_empty_result(): void
     {
-        $http = new Factory;
+        $http = new Factory();
         $http->fake(['*' => $http->response(['text' => '   '], 200)]);
 
         try {
@@ -103,7 +107,7 @@ final class OpenAiCompatibleSttTest extends TestCase
 
     public function test_response_size_cap(): void
     {
-        $http = new Factory;
+        $http = new Factory();
         $http->fake(['*' => $http->response(['text' => str_repeat('a', 100)], 200)]);
 
         $config = $this->config();
@@ -121,7 +125,11 @@ final class OpenAiCompatibleSttTest extends TestCase
 
         try {
             (new OpenAiCompatibleStt($http))->transcribe(new SttRequest(
-                self::AUDIO, 'audio/ogg', null, null, $tiny,
+                self::AUDIO,
+                'audio/ogg',
+                null,
+                null,
+                $tiny,
             ));
             self::fail('oversized body must throw');
         } catch (ProviderException $e) {
@@ -131,7 +139,7 @@ final class OpenAiCompatibleSttTest extends TestCase
 
     public function test_token_never_leaks_into_exception_message(): void
     {
-        $http = new Factory;
+        $http = new Factory();
         $http->fake(['*' => static fn () => throw new \RuntimeException('socket exploded')]);
 
         try {

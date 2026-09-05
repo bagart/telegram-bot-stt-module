@@ -13,5 +13,6 @@ final readonly class SttResult
         public ?int $durationSec,
         public string $providerKey,
         public int $latencyMs,
-    ) {}
+    ) {
+    }
 }

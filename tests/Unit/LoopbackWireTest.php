@@ -122,20 +122,20 @@ final class LoopbackWireTest extends TestCase
             'timeout_seconds' => 20,
         ], JSON_THROW_ON_ERROR);
 
-        $normalized = (new ProviderRegistry)->validateCustomConfig($json);
+        $normalized = (new ProviderRegistry())->validateCustomConfig($json);
 
         $settings = SttSettings::fromArray([
             'provider_key' => ProviderRegistry::CUSTOM_KEY,
             'custom_provider' => $normalized,
         ], isPrivateChat: true);
 
-        $resolved = (new ConfigResolver(new ProviderRegistry, 20, 8_388_608))->resolve($settings, null);
+        $resolved = (new ConfigResolver(new ProviderRegistry(), 20, 8_388_608))->resolve($settings, null);
 
         self::assertSame(ProviderRegistry::CUSTOM_KEY, $resolved->key);
         self::assertSame('http://127.0.0.1:'.self::$port.'/v1', $resolved->baseUrl);
         self::assertNull($resolved->token);
 
-        $result = (new OpenAiCompatibleStt(new Factory))->transcribe(new SttRequest(
+        $result = (new OpenAiCompatibleStt(new Factory()))->transcribe(new SttRequest(
             self::AUDIO,
             'audio/ogg',
             14,
@@ -371,7 +371,7 @@ final class LoopbackWireTest extends TestCase
             maxResponseBytes: 1_048_576,
         );
 
-        return (new OpenAiCompatibleStt(new Factory))->transcribe(new SttRequest(
+        return (new OpenAiCompatibleStt(new Factory()))->transcribe(new SttRequest(
             audioPath: self::AUDIO,
             mimeType: 'audio/ogg',
             durationSec: 14,

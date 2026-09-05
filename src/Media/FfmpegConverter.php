@@ -23,7 +23,8 @@ final class FfmpegConverter
     public function __construct(
         /** Empty string = auto-detect "ffmpeg" on PATH; "none" = hard-disable. */
         private readonly string $binaryPath = '',
-    ) {}
+    ) {
+    }
 
     public function available(): bool
     {

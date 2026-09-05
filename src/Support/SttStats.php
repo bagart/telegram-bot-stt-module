@@ -35,7 +35,8 @@ final class SttStats
 
     public function __construct(
         private readonly CacheRepository $cache,
-    ) {}
+    ) {
+    }
 
     /** Bootstrapped from ModuleFactory; safe no-op outside Laravel. */
     public static function forCurrentStore(): ?self
@@ -147,7 +148,7 @@ final class SttStats
         try {
             $breaker = new ProviderBreaker($this->cache);
 
-            foreach (array_keys((new ProviderRegistry)->all()) as $presetKey) {
+            foreach (array_keys((new ProviderRegistry())->all()) as $presetKey) {
                 $states[$presetKey] = $breaker->state($presetKey);
             }
         } catch (Throwable) {

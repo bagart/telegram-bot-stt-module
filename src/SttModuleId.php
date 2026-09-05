@@ -9,5 +9,7 @@ final class SttModuleId
 {
     public const ID = 'stt';
 
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 }
